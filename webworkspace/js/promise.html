@@ -5,27 +5,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Promise.HTML</title>
+    <script type="module">
+        import cal from '../module/calculator.js';
+        console.log(cal.add(1,2));
+    </script> 
 </head>
 
 <body>
     <script>
+       // console.log(add(1,2));
+       
         let fetch = (url, method, data) => {
             return new Promise((resolve, reject) => {
                 //웹환경에서통신을 제어하는 주체.
                 const xhr = new XMLHttpRequest();
                 xhr.open(method, url);
-                xhr.setRequestHeader('Content-type', 'applicatuin/json');
-                xhr.send(JSON, stringify(data));
+                xhr.setRequestHeader('Content-type', 'application/json');
+                xhr.send(JSON.stringify(data));
 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState != XMLHttpRequest.DONE) return;
 
                     if (xhr.status >= 200 && xhr.status < 400) {
                         resolve(xhr.response);
+                    } else {
+                        reject(new Error(xhr.status));
                     }
                 }
             })
         }
+
+        fetch('https://reqres.in/api/users?page=2', 'Get')
+            // .then(result => console.log(result))
+            // .catch(err => console.log(err));
+
+            .then(result => JSON.parse(result))
+            .then(data => console.log(data))
+            .catch(err => console.log(err));
+        //이게 보기 편함.(parsing 작업 추가.) >연속 진행 보장.
+
+        console.log('fetch 바깥에 실행.');
+        //이렇게 해버리면 fecth 보다 먼저 실행 되어버림!(따로 돌아버림!)
+        //console.log(data);
     </script>
 </body>
 
