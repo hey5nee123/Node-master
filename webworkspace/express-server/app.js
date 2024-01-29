@@ -1,17 +1,49 @@
 const fs = require('fs');
 const express = require('express');
+const { STATUS_CODES } = require('http');
 const app = express();
 //listen = server 실행 명령어.
 
+//미들웨어.
+//-- Request Data Process
+// application/json.
 app.use(express.json({
 
     limit: '50mb'
 }));
+
+//application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: false }));
+
+//Error.
+app.use(function (err, req, res, next) {
+    console.log(err);
+    //응답을 변경해주겠다.
+    res.status(500).json({
+        statusCode: res.statusCode,
+        errMessage: err.errMessage
+    });
+
+})
+
+app.get('/custmoErr', (req, res, next) => {
+
+    next(new Error('Process Fail! Check Data!'));
+})
+
+//static.
+app.use(express.static('./files'));
+app.use('/public',express.static('./files'));
+
+//500번 err.
+app.get('/defaultErr', (req, res) => {
+    throw new Error('기본 핸들러 동작');
+
+})
+
+
 // Data Loding.
-
-
 // https://balmostory.tistory.com/33
-
 //동기로 처리하겠다.
 const jsonFile = fs.readFileSync('./db.json');
 //반드시!(json을 일반 객체로 다룰려면!)
@@ -95,3 +127,13 @@ app.get('/profile', (req, res) => {
     let data = getData('profile');
     res.send(data);
 });
+
+
+//검색을 포함하는 경우. -> QueryString.
+app.get('/search', (req, res) => {
+    let keywords = req.query;
+    console.log('검색 조건 구성.', keywords);
+    console.log(keywords.id);
+    res.json(keywords);
+
+})
