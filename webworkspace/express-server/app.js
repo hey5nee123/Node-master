@@ -1,10 +1,12 @@
 const fs = require('fs');
 const express = require('express');
 const { STATUS_CODES } = require('http');
-const app = express();
+const userRouter = require('./user.js');
+const app = express();npm dedupe
 //listen = server 실행 명령어.
 
 //미들웨어.
+
 //-- Request Data Process
 // application/json.
 app.use(express.json({
@@ -33,12 +35,11 @@ app.get('/custmoErr', (req, res, next) => {
 
 //static.
 app.use(express.static('./files'));
-app.use('/public',express.static('./files'));
+app.use('/public', express.static('./files'));
 
 //500번 err.
 app.get('/defaultErr', (req, res) => {
     throw new Error('기본 핸들러 동작');
-
 })
 
 
@@ -48,7 +49,7 @@ app.get('/defaultErr', (req, res) => {
 const jsonFile = fs.readFileSync('./db.json');
 //반드시!(json을 일반 객체로 다룰려면!)
 //parsing 안 하면 'ReferenceError: jsonData is not defined'라는 오류 뜬다.
-// const jsonData = JSON.parse(jsonFile);
+const jsonData = JSON.parse(jsonFile);
 
 const getData = (target, where) => {
     let data = jsonData[target];
@@ -90,9 +91,9 @@ app.get('/posts/:id', (req, res) => {
 app.post('/posts', (req, res) => {
     let data = req.body;
     console.log('등록', data);
-
     res.json(data);
 })
+
 
 //수정.
 app.put('/posts/:id', (req, res) => {
@@ -115,6 +116,7 @@ app.get('/comments', (req, res) => {
     res.json(data);
 });
 
+app.use('/user',userRouter);
 //단건조회 - comments.
 app.get('/comments/:id', (req, res) => {
     let postId = req.params.id;
@@ -130,6 +132,7 @@ app.get('/profile', (req, res) => {
 
 
 //검색을 포함하는 경우. -> QueryString.
+//list[0].id = 100&list[0].name=Hong&
 app.get('/search', (req, res) => {
     let keywords = req.query;
     console.log('검색 조건 구성.', keywords);
