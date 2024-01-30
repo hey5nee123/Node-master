@@ -4,6 +4,7 @@ const cors = require('cors');
 const app = express();
 
 
+
 // application/x-www-form-urlencode
 const defaultParser = express.urlencoded({ extended: false });
 
@@ -11,8 +12,8 @@ const defaultParser = express.urlencoded({ extended: false });
 const jsonParser = express.json();
 
 //app.use(defaultParser)
-app.use(jsonParser);
 
+app.use(jsonParser);
 //get은 query   post body.
 app.get('/search', defaultParser, (req, res) => {
     let data = req.query.keyword;
@@ -54,9 +55,6 @@ let sessionSetting = session({
 });
 
 app.use(sessionSetting);
-app.get('/', (req, res) => {
-    res.json(req.session);
-});
 
 //요청,응답 반대로 X.
 app.post('/login', (req, res) => {
@@ -65,15 +63,27 @@ app.post('/login', (req, res) => {
         req.session.user = id;
         req.session.isLogin = true;
     }
-    req.session.save((err)=>{
-        if(err) throw err;
-
+    req.session.save((err) => {
+        if (err) throw err;
+        
         //첫페이지로 돌리겠다.
         res.redirect('/');
     });
 });
 
-app.get('/logout',(req,res)=>{
+const corsOptions = {
+    origin : 'http://127.0.0.1:5500',
+    optionsSuccessStatus: 200
+    
+}
+app.use(cors(corsOptions));
+
+
+app.get('/logout', (req, res) => {
     //로그아웃시 session '파.개'
     req.session.destroy();
 })
+
+app.get('/', (req, res) => {
+    res.json(req.session);
+});

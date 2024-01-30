@@ -2,7 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const { STATUS_CODES } = require('http');
 const userRouter = require('./user.js');
-const app = express();npm dedupe
+const app = express();
 //listen = server 실행 명령어.
 
 //미들웨어.
