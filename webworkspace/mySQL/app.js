@@ -87,16 +87,16 @@ function selectedInfo(obj) {
 };
 
 
-async function customerUpdateInfo(request) {
+/*async function customerUpdateInfo(request) {
     let data = [, , , request.params.id];
     let result = await mysql.executeQuery('customerUpdateInfo', data);
     return result;
-}
+}*/
 
 function getInfo(obj) {
     //순서는 상관 X.
     let getData = ["email", "phone", "address"];
-    let newAry = {};
+    let newAry = [];
     for (let target of getData) {
         for (let field in obj) {
             if (field == target) {
@@ -108,9 +108,14 @@ function getInfo(obj) {
     return newAry; // ["ㅇㅇㄹㅇ@naver.com" , "010-2392-2392",null]
 };
 
-async function updateInfo(obj) {
-
+/*async function updateInfo(obj) {
     let data = [...getInfo(request.body.param), request.param.id];
+    let result = await mysql.executeQuery('customerUpdateInfo', data);
+    return result;
+}*/
+
+async function updateInfo(obj) {
+    let data = [...getInfo(obj), obj.id];
     let result = await mysql.executeQuery('customerUpdateInfo', data);
     return result;
 }
